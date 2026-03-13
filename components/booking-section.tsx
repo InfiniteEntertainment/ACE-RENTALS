@@ -20,47 +20,8 @@ export function BookingSection({ selectedVehicle }: BookingSectionProps) {
     setVehicle(selectedVehicle)
   }, [selectedVehicle])
 
-  const encode = (formData: FormData) => {
-    const params = new URLSearchParams()
-    formData.forEach((value, key) => {
-      params.append(key, String(value))
-    })
-    return params.toString()
-  }
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setSubmitError(null)
-
-    const form = e.currentTarget
-    const data = new FormData(form)
-
-    // MUST be present for Netlify to record the submission
-    data.set('form-name', 'booking')
-
-    // Must exist because you declared netlify-honeypot="bot-field"
-    if (!data.has('bot-field')) data.set('bot-field', '')
-
-    try {
-      const res = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: encode(data),
-      })
-
-      if (!res.ok) {
-        const text = await res.text().catch(() => '')
-        throw new Error(`Submission failed: ${res.status} ${res.statusText} ${text}`)
-      }
-
-      setFormSubmitted(true)
-      form.reset()
-      setVehicle('') // optional: resets the controlled select
-    } catch (err: any) {
-      setSubmitError(err?.message || 'Submission failed. Please try again.')
-    }
-  }
-
+  
+  
   return (
     <section id="booking" className="relative overflow-hidden pb-32 pt-12 md:pt-16">
       {/* Background video (fills the padded “gap” area too) */}
@@ -145,18 +106,14 @@ export function BookingSection({ selectedVehicle }: BookingSectionProps) {
             transition={{ duration: 0.6, delay: 0.3 }}
             name="booking"
             method="POST"
+            action="/netlify-forms.html"
             data-netlify="true"
             netlify-honeypot="bot-field"
-            onSubmit={handleSubmit}
             className="space-y-6"
           >
             {/* Hidden fields for Netlify */}
             <input type="hidden" name="form-name" value="booking" />
-            <p className="hidden">
-              <label>
-                Do not fill this out: <input name="bot-field" />
-              </label>
-            </p>
+            <input type="hidden" name="bot-field" />
 
             {/* Vehicle Select */}
             <div className="space-y-2">
@@ -273,14 +230,6 @@ export function BookingSection({ selectedVehicle }: BookingSectionProps) {
                 className="w-full resize-none border border-foreground/10 bg-card px-4 py-3 font-sans text-sm text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors focus:border-foreground/30"
               />
             </div>
-
-           
-            {submitError ? (
-              <p className="border border-red-500/30 bg-red-500/10 px-4 py-3 font-sans text-sm text-red-200">
-                {submitError}
-              </p>
-            ) : null}
-
 
             {/* Submit Button */}
             <button
