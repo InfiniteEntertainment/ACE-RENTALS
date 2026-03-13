@@ -32,7 +32,7 @@ export function BookingSection({ selectedVehicle }: BookingSectionProps) {
     if (!data.has('bot-field')) data.set('bot-field', '')
 
     try {
-      const res = await fetch('/netlify-forms.html', {
+      const res = await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams(data as any).toString(),
