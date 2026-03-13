@@ -20,12 +20,11 @@ export function BookingSection({ selectedVehicle }: BookingSectionProps) {
     setVehicle(selectedVehicle)
   }, [selectedVehicle])
 
-  const encode = (formData: FormData) => {
-    const params = new URLSearchParams()
-    formData.forEach((value, key) => {
-      params.append(key, String(value))
-    })
-    return params.toString()
+  // Netlify-friendly encoder (matches the working project pattern)
+  const encodeForm = (data: Record<string, string>) => {
+    return Object.keys(data)
+      .map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(data[key] ?? ''))
+      .join('&')
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -33,19 +32,27 @@ export function BookingSection({ selectedVehicle }: BookingSectionProps) {
     setSubmitError(null)
 
     const form = e.currentTarget
-    const data = new FormData(form)
+    const formData = new FormData(form)
 
-    // MUST be present for Netlify to record the submission
-    data.set('form-name', 'booking')
+    // Convert FormData -> plain object (more reliable for Netlify Forms)
+    const payload: Record<string, string> = {
+      'form-name': 'booking',
+      'bot-field': '',
+    }
 
-    // Must exist because you declared netlify-honeypot="bot-field"
-    if (!data.has('bot-field')) data.set('bot-field', '')
+    formData.forEach((value, key) => {
+      payload[key] = String(value)
+    })
+
+    // Make absolutely sure these exist
+    payload['form-name'] = 'booking'
+    payload['bot-field'] = payload['bot-field'] || ''
 
     try {
-      const res = await fetch('/', {
+      const res = await fetch('/netlify-forms.html', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: encode(data),
+        body: encodeForm(payload),
       })
 
       if (!res.ok) {
@@ -146,7 +153,7 @@ export function BookingSection({ selectedVehicle }: BookingSectionProps) {
             name="booking"
             method="POST"
             data-netlify="true"
-            netlify-honeypot="bot-field"
+            data-netlify-honeypot="bot-field"
             onSubmit={handleSubmit}
             className="space-y-6"
           >
@@ -154,7 +161,7 @@ export function BookingSection({ selectedVehicle }: BookingSectionProps) {
             <input type="hidden" name="form-name" value="booking" />
             <p className="hidden">
               <label>
-                Do not fill this out: <input name="bot-field" />
+                Don’t fill this out: <input name="bot-field" />
               </label>
             </p>
 
@@ -274,13 +281,11 @@ export function BookingSection({ selectedVehicle }: BookingSectionProps) {
               />
             </div>
 
-           
             {submitError ? (
               <p className="border border-red-500/30 bg-red-500/10 px-4 py-3 font-sans text-sm text-red-200">
                 {submitError}
               </p>
             ) : null}
-
 
             {/* Submit Button */}
             <button
