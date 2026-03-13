@@ -20,6 +20,14 @@ export function BookingSection({ selectedVehicle }: BookingSectionProps) {
     setVehicle(selectedVehicle)
   }, [selectedVehicle])
 
+  const encode = (formData: FormData) => {
+    const params = new URLSearchParams()
+    formData.forEach((value, key) => {
+      params.append(key, String(value))
+    })
+    return params.toString()
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setSubmitError(null)
@@ -27,15 +35,17 @@ export function BookingSection({ selectedVehicle }: BookingSectionProps) {
     const form = e.currentTarget
     const data = new FormData(form)
 
-    // Ensure these exist in the POST body
+    // MUST be present for Netlify to record the submission
     data.set('form-name', 'booking')
+
+    // Must exist because you declared netlify-honeypot="bot-field"
     if (!data.has('bot-field')) data.set('bot-field', '')
 
     try {
       const res = await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(data as any).toString(),
+        body: encode(data),
       })
 
       if (!res.ok) {
