@@ -57,15 +57,6 @@ export function ShowcaseSection() {
               San Diego&apos;s Premier Fleet
             </motion.p>
 
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="mt-4 font-display text-5xl uppercase tracking-tight text-foreground sm:text-6xl lg:text-7xl"
-            >
-              A Curated Fleet
-            </motion.h2>
-
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}

@@ -114,6 +114,14 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
           className="text-center"
         >
+          <motion.h1
+            initial={{ clipPath: 'inset(0 100% 0 0)' }}
+            animate={isLoaded ? { clipPath: 'inset(0 0% 0 0)' } : {}}
+            transition={{ duration: 1.2, delay: 0.5, ease: [0.65, 0, 0.35, 1] }}
+            className="font-display text-5xl uppercase leading-none tracking-tight text-foreground sm:text-7xl md:text-8xl lg:text-9xl"
+          >
+            Curated fleet.
+          </motion.h1>
           
           <motion.h1
             initial={{ clipPath: 'inset(0 100% 0 0)' }}
