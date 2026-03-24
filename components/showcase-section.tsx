@@ -11,11 +11,6 @@ const features = [
     description: 'Doorstep delivery throughout San Diego.',
   },
   {
-    icon: Shield,
-    title: 'Insurance Options',
-    description: 'Comprehensive coverage available.',
-  },
-  {
     icon: Headphones,
     title: 'Concierge Support',
     description: '24/7 assistance.',
